@@ -25,22 +25,12 @@ const col = css`
 	flex-direction: column;
 `;
 
-// Lazy initialize transport when first needed to allow user configuration
-let transportInitialized = false;
-
-async function ensureTransportReady() {
-	if (!transportInitialized) {
-		try {
-			await connection.setTransport(store.transport, [{ wisp: store.wispurl }]);
-			transportInitialized = true;
-		} catch (e) {
-			console.error("Failed to initialize transport:", e);
-			throw new Error(
-				`Failed to connect to transport. Please configure a valid WISP URL in the settings.`
-			);
-		}
-	}
-}
+// Auto-initialize transport with default WISP server
+connection
+	.setTransport(store.transport, [{ wisp: store.wispurl }])
+	.catch((e) => {
+		console.error("Transport initialization failed:", e);
+	});
 
 function Config() {
 	this.css = `
@@ -229,15 +219,7 @@ function BrowserApp() {
 			this.url = "https://" + this.url;
 		}
 
-		return ensureTransportReady()
-			.then(() => frame.go(this.url))
-			.catch((e) => {
-				alert(
-					"Cannot navigate: " +
-						e.message +
-						"\n\nPlease configure a valid WISP server URL in the settings."
-				);
-			});
+		return frame.go(this.url);
 	};
 
 	const cfg = h(Config);

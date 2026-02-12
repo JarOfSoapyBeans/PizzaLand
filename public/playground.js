@@ -18,22 +18,12 @@ const col = css`
 	flex-direction: column;
 `;
 
-// Lazy initialize transport when first needed to allow user configuration
-let transportInitialized = false;
-
-async function ensureTransportReady() {
-	if (!transportInitialized) {
-		try {
-			await connection.setTransport(store.transport, [{ wisp: store.wispurl }]);
-			transportInitialized = true;
-		} catch (e) {
-			console.error("Failed to initialize transport:", e);
-			throw new Error(
-				`Failed to connect to transport. Please configure a valid WISP URL in the settings.`
-			);
-		}
-	}
-}
+// Auto-initialize transport with default WISP server
+connection
+	.setTransport(store.transport, [{ wisp: store.wispurl }])
+	.catch((e) => {
+		console.error("Transport initialization failed:", e);
+	});
 
 function PlaygroundApp() {
 	this.css = `
@@ -176,7 +166,6 @@ function PlaygroundApp() {
 		});
 
 		const recompile = async () => {
-			await ensureTransportReady();
 			(await navigator.serviceWorker.ready).active.postMessage({
 				type: "playgroundData",
 				html: html.getValue(),

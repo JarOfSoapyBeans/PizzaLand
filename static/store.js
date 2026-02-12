@@ -3,10 +3,7 @@ const store = $store(
 		url: "https://google.com",
 		wispurl:
 			_CONFIG?.wispurl ||
-			(location.protocol === "https:" ? "wss" : "ws") +
-				"://" +
-				location.host +
-				"/wisp/",
+			"wss://repeat-immunology-fold-athletics.trycloudflare.com/wisp/",
 		bareurl:
 			_CONFIG?.bareurl ||
 			(location.protocol === "https:" ? "https" : "http") +
