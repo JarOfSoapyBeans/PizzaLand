@@ -7834,7 +7834,7 @@ self.WASM = '${r}';`),
 			return r(7510);
 		}),
 		(globalThis.$scramjetVersion = {
-			build: "c18a02d",
+			build: "8f6da2b",
 			version: "2.0.0-alpha",
 		}),
 		"document" in globalThis &&
