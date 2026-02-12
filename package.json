@@ -11,7 +11,7 @@
 	"packageManager": "pnpm@10.23.0",
 	"scripts": {
 		"ensure-wasm-shim": "node scripts/ensure-wasm-shim.js",
-		"build": "pnpm run ensure-wasm-shim && rspack build --mode production && mkdir -p public && cp -R static/* public/ || true && mkdir -p public/scram && cp -R dist/* public/scram/ || true",
+		"build": "pnpm run ensure-wasm-shim && rspack build --mode production && mkdir -p public && cp -R static/* public/ || true && mkdir -p public/scram && cp -R dist/* public/scram/ || true && mkdir -p public/baremux && cp -R node_modules/@mercuryworkshop/bare-mux/dist/* public/baremux/ || true",
 		"build:types": "rslib build && rm -rf dist/temp",
 		"build:all": "npm run build && npm run build:types",
 		"rewriter:build": "cd rewriter/wasm/ && bash build.sh && cd ../../",
