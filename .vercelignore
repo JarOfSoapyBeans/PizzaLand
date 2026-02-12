@@ -1,0 +1,10 @@
+pnpm-store/
+.pnpm-store/
+node_modules/
+dist/
+rewriter/
+.git/
+.github/
+tests/
+docs/
+ci/

@@ -8,12 +8,15 @@
 		"type": "git",
 		"url": "https://github.com/MercuryWorkshop/scramjet"
 	},
+	"packageManager": "pnpm@10.23.0",
 	"scripts": {
-		"build": "rspack build --mode production",
+		"ensure-wasm-shim": "node scripts/ensure-wasm-shim.js",
+		"build": "pnpm run ensure-wasm-shim && rspack build --mode production && mkdir -p public && cp -R static/* public/ || true && mkdir -p public/scram && cp -R dist/* public/scram/ || true",
 		"build:types": "rslib build && rm -rf dist/temp",
 		"build:all": "npm run build && npm run build:types",
 		"rewriter:build": "cd rewriter/wasm/ && bash build.sh && cd ../../",
 		"dev": "node server.js",
+		"vercel-build": "node scripts/ensure-wasm-shim.js && npm run build",
 		"dev:debug": "DEBUG=1 node server.js",
 		"prepack": "RELEASE=1 npm run rewriter:build && npm run build:all",
 		"pub": "npm publish --no-git-checks --access public",
