@@ -18,19 +18,16 @@ const col = css`
 	flex-direction: column;
 `;
 
-// Initialize transport and track readiness
+// Initialize transport with promise tracking
 let transportReady = false;
-let transportError = null;
-
-async function initializeTransport() {
+let transportReadyPromise = (async () => {
 	for (let attempt = 0; attempt < 3; attempt++) {
 		try {
 			await connection.setTransport(store.transport, [{ wisp: store.wispurl }]);
 			transportReady = true;
 			console.log("Transport initialized successfully");
-			return;
+			return true;
 		} catch (e) {
-			transportError = e;
 			console.error(
 				`Transport initialization attempt ${attempt + 1} failed:`,
 				e
@@ -44,10 +41,20 @@ async function initializeTransport() {
 	console.error(
 		"Transport initialization failed after 3 attempts. WISP server may be unreachable."
 	);
-}
+	return false;
+})();
 
-// Start initialization immediately
-initializeTransport();
+// Helper to ensure transport is ready
+async function ensureTransport() {
+	if (!transportReady) {
+		await transportReadyPromise;
+	}
+	if (!transportReady) {
+		throw new Error(
+			"Transport failed to initialize. WISP server may be unreachable."
+		);
+	}
+}
 
 function PlaygroundApp() {
 	this.css = `
@@ -190,18 +197,28 @@ function PlaygroundApp() {
 		});
 
 		const recompile = async () => {
-			(await navigator.serviceWorker.ready).active.postMessage({
-				type: "playgroundData",
-				html: html.getValue(),
-				css: css.getValue(),
-				js: js.getValue(),
-				origin: this.fakeorigin,
-			});
+			try {
+				await ensureTransport();
+				(await navigator.serviceWorker.ready).active.postMessage({
+					type: "playgroundData",
+					html: html.getValue(),
+					css: css.getValue(),
+					js: js.getValue(),
+					origin: this.fakeorigin,
+				});
 
-			this.frame.src = scramjet.encodeUrl(this.fakeorigin);
+				this.frame.src = scramjet.encodeUrl(this.fakeorigin);
+			} catch (e) {
+				console.error("Recompile failed:", e);
+			}
 		};
 
-		recompile();
+		// Wait for transport before initial recompile
+		ensureTransport()
+			.then(() => recompile())
+			.catch((e) => {
+				console.error("Initial recompile failed:", e);
+			});
 		html.getModel().onDidChangeContent(recompile);
 		css.getModel().onDidChangeContent(recompile);
 		js.getModel().onDidChangeContent(recompile);

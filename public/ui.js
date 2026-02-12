@@ -25,19 +25,16 @@ const col = css`
 	flex-direction: column;
 `;
 
-// Initialize transport and track readiness
+// Initialize transport with promise tracking
 let transportReady = false;
-let transportError = null;
-
-async function initializeTransport() {
+let transportReadyPromise = (async () => {
 	for (let attempt = 0; attempt < 3; attempt++) {
 		try {
 			await connection.setTransport(store.transport, [{ wisp: store.wispurl }]);
 			transportReady = true;
 			console.log("Transport initialized successfully");
-			return;
+			return true;
 		} catch (e) {
-			transportError = e;
 			console.error(
 				`Transport initialization attempt ${attempt + 1} failed:`,
 				e
@@ -51,10 +48,20 @@ async function initializeTransport() {
 	console.error(
 		"Transport initialization failed after 3 attempts. WISP server may be unreachable."
 	);
-}
+	return false;
+})();
 
-// Start initialization immediately
-initializeTransport();
+// Helper to ensure transport is ready
+async function ensureTransport() {
+	if (!transportReady) {
+		await transportReadyPromise;
+	}
+	if (!transportReady) {
+		throw new Error(
+			"Transport failed to initialize. WISP server may be unreachable."
+		);
+	}
+}
 
 function Config() {
 	this.css = `
@@ -236,22 +243,15 @@ function BrowserApp() {
 		this.url = e.url;
 	});
 
-	const handleSubmit = () => {
-		if (!transportReady) {
-			if (transportError) {
-				alert(
-					`Transport not ready: ${transportError.message}\n\nTrying to reconnect to WISP server at: ${store.wispurl}`
-				);
-			} else {
-				alert(
-					`Waiting for transport to initialize...\nWISP URL: ${store.wispurl}`
-				);
-			}
+	const handleSubmit = async () => {
+		try {
+			await ensureTransport();
+		} catch (err) {
+			alert(`Cannot navigate: ${err.message}\nWISP URL: ${store.wispurl}`);
 			return;
 		}
 
 		this.url = this.url.trim();
-		//  frame.go(this.url)
 		if (!this.url.startsWith("http")) {
 			this.url = "https://" + this.url;
 		}

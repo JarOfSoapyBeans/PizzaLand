@@ -3322,7 +3322,7 @@ var e,
 				(globalThis.$scramjetRequire = function (e) {
 					return r(409)(e);
 				}));
-			let i = { build: "4d99e53", version: "2.0.0-alpha" };
+			let i = { build: "debaba7", version: "2.0.0-alpha" };
 			((globalThis.$scramjetLoadController = n),
 				(globalThis.$scramjetLoadClient = a),
 				(globalThis.$scramjetLoadWorker = s),
