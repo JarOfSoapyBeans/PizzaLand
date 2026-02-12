@@ -1,13 +1,24 @@
 
-export interface Rewriter {
-  rewrite_js(js: string, url: string): any;
-  rewrite_js_bytes(js: Uint8Array, url: string): any;
-}
-
-export function initSync(buffer: ArrayBuffer): void;
-export function rewrite_js(js: string, url: string): any;
-export function rewrite_js_bytes(js: Uint8Array, url: string): any;
-
 export interface JsRewriterOutput {
-  code: string;
+  js: Uint8Array;
+  map: any;
+  scramtag: string;
+  errors: any[];
 }
+
+export interface RewriterConfig {
+  config: any;
+  shared: any;
+  flagEnabled: any;
+  codec: any;
+}
+
+export class Rewriter {
+  constructor(config: RewriterConfig);
+  rewrite_js(code: any, url: any, source: any, module: any): JsRewriterOutput;
+  rewrite_js_bytes(code: any, url: any, source: any, module: any): JsRewriterOutput;
+}
+
+export function initSync(config: any): void;
+export function rewrite_js(code: any, url: any): JsRewriterOutput;
+export function rewrite_js_bytes(code: any, url: any): JsRewriterOutput;

@@ -3322,7 +3322,7 @@ var e,
 				(globalThis.$scramjetRequire = function (e) {
 					return r(409)(e);
 				}));
-			let i = { build: "a47ca39", version: "2.0.0-alpha" };
+			let i = { build: "a226d4a", version: "2.0.0-alpha" };
 			((globalThis.$scramjetLoadController = n),
 				(globalThis.$scramjetLoadClient = a),
 				(globalThis.$scramjetLoadWorker = s),
@@ -7788,20 +7788,21 @@ self.WASM = '${r}';`),
 		},
 		3907: function (e, t, r) {
 			function n(e) {
-				throw Error(
-					"WASM shim: initSync called but real wasm module not available"
-				);
+				globalThis.__rewriterWasmInitialized = !0;
 			}
 			r.d(t, { LW: () => a, QR: () => n });
 			class a {
-				rewrite_js(e, t) {
+				constructor(e) {
+					this.config = e;
+				}
+				rewrite_js(e, t, r, n) {
 					throw Error(
-						"WASM shim: rewrite_js called but real wasm module not available"
+						"WASM shim: Rewriter.rewrite_js called but real wasm module not loaded. This is expected at build/TS check time. At runtime, use the real wasm module."
 					);
 				}
-				rewrite_js_bytes(e, t) {
+				rewrite_js_bytes(e, t, r, n) {
 					throw Error(
-						"WASM shim: rewrite_js_bytes called but real wasm module not available"
+						"WASM shim: Rewriter.rewrite_js_bytes called but real wasm module not loaded. This is expected at build/TS check time. At runtime, use the real wasm module."
 					);
 				}
 			}

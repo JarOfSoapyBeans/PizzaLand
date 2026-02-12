@@ -11,10 +11,9 @@ if (!fs.existsSync(outDir)) {
 }
 
 const wasmJs = path.join(outDir, "wasm.js");
-if (!fs.existsSync(wasmJs)) {
-	fs.writeFileSync(
-		wasmJs,
-		`
+fs.writeFileSync(
+	wasmJs,
+	`
 export function initSync(config) {
   // Shim: real wasm initialization not available at build time
   globalThis.__rewriterWasmInitialized = true;
@@ -48,17 +47,15 @@ export function rewrite_js_bytes(code, url) {
   throw new Error('WASM shim: rewrite_js_bytes stub');
 }
 `
-	);
-}
+);
 
 const wasmDts = path.join(outDir, "wasm.d.ts");
-if (!fs.existsSync(wasmDts)) {
-	fs.writeFileSync(
-		wasmDts,
-		`
+fs.writeFileSync(
+	wasmDts,
+	`
 export interface JsRewriterOutput {
-  js: Uint8Array | string;
-  map: string | null;
+  js: Uint8Array;
+  map: any;
   scramtag: string;
   errors: any[];
 }
@@ -66,34 +63,20 @@ export interface JsRewriterOutput {
 export interface RewriterConfig {
   config: any;
   shared: any;
-  flagEnabled: (flag: string, base: any) => boolean;
-  codec: {
-    encode: (str: string) => string;
-    decode: (str: string) => string;
-  };
+  flagEnabled: any;
+  codec: any;
 }
 
 export class Rewriter {
   constructor(config: RewriterConfig);
-  rewrite_js(
-    code: string,
-    url: string,
-    source: string,
-    module: any
-  ): JsRewriterOutput;
-  rewrite_js_bytes(
-    code: Uint8Array,
-    url: string,
-    source: string,
-    module: any
-  ): JsRewriterOutput;
+  rewrite_js(code: any, url: any, source: any, module: any): JsRewriterOutput;
+  rewrite_js_bytes(code: any, url: any, source: any, module: any): JsRewriterOutput;
 }
 
-export function initSync(config: { module: WebAssembly.Module }): void;
-export function rewrite_js(code: string, url: string): JsRewriterOutput;
-export function rewrite_js_bytes(code: Uint8Array, url: string): JsRewriterOutput;
+export function initSync(config: any): void;
+export function rewrite_js(code: any, url: any): JsRewriterOutput;
+export function rewrite_js_bytes(code: any, url: any): JsRewriterOutput;
 `
-	);
-}
+);
 
 console.log("✓ WASM shim files ensured.");
