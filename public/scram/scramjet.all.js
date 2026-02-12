@@ -7776,12 +7776,21 @@ self.WASM = '${r}';`),
 				};
 			},
 			3907: function (e, t, r) {
-				function n(e) {}
+				function n(e) {
+					throw Error(
+						"WASM shim: initSync called but real wasm module not available"
+					);
+				}
 				r.d(t, { LW: () => s, QR: () => n });
 				class s {
-					constructor(e) {
+					rewrite_js(e, t) {
 						throw Error(
-							"Rewriter wasm shim used: real wasm build not found. Run `npm run rewriter:build` or provide REWRITERWASM/WASM at runtime."
+							"WASM shim: rewrite_js called but real wasm module not available"
+						);
+					}
+					rewrite_js_bytes(e, t) {
+						throw Error(
+							"WASM shim: rewrite_js_bytes called but real wasm module not available"
 						);
 					}
 				}
@@ -7824,7 +7833,7 @@ self.WASM = '${r}';`),
 			return r(7510);
 		}),
 		(globalThis.$scramjetVersion = {
-			build: "667cf55",
+			build: "a47ca39",
 			version: "2.0.0-alpha",
 		}),
 		"document" in globalThis &&
